@@ -1,0 +1,22 @@
+{
+    "name": "server",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "tsx --watch --env-file=../.env src/index.ts",
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@clerk/fastify": "^1.0.0",
+        "@fastify/cors": "^9.0.1",
+        "@google/generative-ai": "^0.24.1",
+        "@kodo/db": "workspace:*",
+        "@kodo/types": "workspace:*",
+        "fastify": "^4.26.2"
+    },
+    "devDependencies": {
+        "@kodo/config": "workspace:*",
+        "tsx": "^4.7.2",
+        "typescript": "^5.4.5"
+    }
+}

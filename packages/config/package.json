@@ -1,0 +1,11 @@
+{
+    "name": "@kodo/config",
+    "version": "1.0.0",
+    "private": true,
+    "main": "index.js",
+    "devDependencies": {
+        "typescript": "^5.4.5",
+        "eslint": "^8.57.0",
+        "prettier": "^3.2.5"
+    }
+}

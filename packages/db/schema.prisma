@@ -1,0 +1,180 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  name             String?
+  avatarUrl        String?
+  xpTotal          Int      @default(0)
+  gems             Int      @default(0)
+  hearts           Int      @default(5)
+  heartsLastRefill DateTime @default(now())
+  dailyGoalMinutes Int      @default(10)
+  createdAt        DateTime @default(now())
+
+  progress         UserProgress[]
+  unitProgress     UnitProgress[]
+  attempts         ExerciseAttempt[]
+  streak           Streak?
+  badges           UserBadge[]
+  leaderboards     LeaderboardWeekly[]
+}
+
+model Stage {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int
+  iconUrl     String?
+  published   Boolean  @default(false)
+
+  units       Unit[]
+}
+
+model Unit {
+  id          String   @id @default(cuid())
+  stageId     String
+  stage       Stage    @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int
+  published   Boolean  @default(false)
+
+  lessons     Lesson[]
+  progress    UnitProgress[]
+}
+
+model Lesson {
+  id        String   @id @default(cuid())
+  unitId    String
+  unit      Unit     @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  title     String
+  xpReward  Int      @default(10)
+  order     Int
+  published Boolean  @default(false)
+
+  exercises Exercise[]
+  progress  UserProgress[]
+}
+
+enum ExerciseType {
+  mcq
+  fill_blank
+  arrange
+  debug
+  write
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+model Exercise {
+  id            String       @id @default(cuid())
+  lessonId      String
+  lesson        Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  type          ExerciseType
+  prompt        String
+  codeTemplate  String?
+  options       Json?
+  correctAnswer String
+  explanation   String?
+  xpReward      Int          @default(10)
+  difficulty    Difficulty   @default(medium)
+  order         Int
+
+  attempts      ExerciseAttempt[]
+}
+
+model UserProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+  xpEarned    Int
+  perfect     Boolean
+
+  @@unique([userId, lessonId])
+}
+
+enum UnitStatus {
+  locked
+  unlocked
+  completed
+}
+
+model UnitProgress {
+  id      String     @id @default(cuid())
+  userId  String
+  user    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  unitId  String
+  unit    Unit       @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  status  UnitStatus @default(locked)
+
+  @@unique([userId, unitId])
+}
+
+model ExerciseAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId  String
+  exercise    Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  answer      String
+  correct     Boolean
+  attemptedAt DateTime @default(now())
+}
+
+model Streak {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastActivity  DateTime
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  freezeCount   Int      @default(0)
+}
+
+model Badge {
+  id            String      @id @default(cuid())
+  name          String
+  description   String
+  iconUrl       String?
+  conditionJson Json
+  
+  users         UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model LeaderboardWeekly {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  xpThisWeek  Int      @default(0)
+  weekStart   DateTime
+  league      String 
+
+  @@unique([userId, weekStart])
+}

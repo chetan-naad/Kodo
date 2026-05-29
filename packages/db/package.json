@@ -1,0 +1,16 @@
+{
+    "name": "@kodo/db",
+    "version": "1.0.0",
+    "private": true,
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "dependencies": {
+        "@prisma/client": "^5.12.0"
+    },
+    "devDependencies": {
+        "@kodo/config": "workspace:*",
+        "@types/node": "^20.12.7",
+        "prisma": "^5.12.0",
+        "typescript": "^5.4.5"
+    }
+}
