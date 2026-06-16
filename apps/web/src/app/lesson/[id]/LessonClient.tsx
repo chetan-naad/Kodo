@@ -1,10 +1,9 @@
 "use client";
 
 import { Heart, X, CheckCircle, XCircle, Lightbulb, Play, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 import { useState, useEffect, useTransition } from 'react';
 import { useAuth } from '@clerk/nextjs';
-import { upsertUserProgress } from '../../actions/progress';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { upsertUserProgress } from '../../actions/progress';
 
 type ExerciseType = 'mcq' | 'fill_blank' | 'arrange' | 'debug' | 'write';
@@ -203,12 +202,12 @@ export default function LessonClient({
     const getOptionStyle = (option: string, mono = false) => {
         const base = `relative p-5 border-2 rounded-2xl text-left font-bold ${mono ? 'font-mono text-sm' : 'text-lg'} transition-all`;
         if (isChecked) {
-            if (option === activeExercise.correctAnswer) return `${base} border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400`;
-            if (selectedOption === option) return `${base} border-red-500 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400`;
-            return `${base} border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-600 opacity-60`;
+            if (option === activeExercise.correctAnswer) return `${base} border-green-500 bg-green-50 text-green-700`;
+            if (selectedOption === option) return `${base} border-red-500 bg-red-50 text-red-700`;
+            return `${base} border-slate-200 text-slate-400 opacity-60`;
         }
-        if (selectedOption === option) return `${base} border-brand-500 bg-brand-50 dark:bg-brand-950/30 text-brand-600 dark:text-brand-400 ring-4 ring-brand-100 dark:ring-brand-900/30`;
-        return `${base} border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:border-slate-300 dark:hover:border-slate-600 active:scale-[0.98]`;
+        if (selectedOption === option) return `${base} border-brand-500 bg-brand-50 text-brand-600 ring-4 ring-brand-100`;
+        return `${base} border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98]`;
     };
 
     const OptionIndicator = ({ option }: { option: string }) => {
@@ -241,7 +240,7 @@ export default function LessonClient({
         const parts = activeExercise.prompt.split('____');
         return (
             <div className="flex flex-col gap-6">
-                <div className="text-xl font-bold text-slate-700 dark:text-slate-200 leading-relaxed bg-slate-50 dark:bg-slate-900 p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 transition-colors">
+                <div className="text-xl font-bold text-slate-700 leading-relaxed bg-slate-50 p-5 rounded-2xl border-2 border-slate-200">
                     {parts.map((part, i) => (
                         <span key={i}>
                             {part}
@@ -254,8 +253,8 @@ export default function LessonClient({
                                     disabled={isChecked}
                                     className={`inline-block mx-2 px-3 py-1 border-b-4 rounded-lg font-mono text-base w-32 text-center focus:outline-none transition-colors ${
                                         isChecked
-                                            ? isCorrect ? 'border-green-500 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400' : 'border-red-500 bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400'
-                                            : 'border-brand-500 bg-brand-50 dark:bg-brand-950/30 text-brand-700 dark:text-brand-400'
+                                            ? isCorrect ? 'border-green-500 bg-green-50 text-green-700' : 'border-red-500 bg-red-50 text-red-700'
+                                            : 'border-brand-500 bg-brand-50 text-brand-700'
                                     }`}
                                     placeholder="type here"
                                 />
@@ -273,7 +272,7 @@ export default function LessonClient({
     const renderArrange = () => (
         <div className="flex flex-col gap-6">
             <div className={`min-h-16 p-4 border-2 border-dashed rounded-2xl flex flex-wrap gap-2 transition-colors ${
-                isChecked ? (isCorrect ? 'border-green-400 bg-green-50 dark:bg-green-950/30' : 'border-red-400 bg-red-50 dark:bg-red-950/30') : 'border-brand-300 dark:border-brand-800 bg-brand-50/50 dark:bg-brand-950/20'
+                isChecked ? (isCorrect ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50') : 'border-brand-300 bg-brand-50/50'
             }`}>
                 {arrangedTokens.length === 0
                     ? <span className="text-slate-400 font-medium text-sm">Tap tokens below to arrange them here</span>
@@ -291,7 +290,7 @@ export default function LessonClient({
                 {availableTokens.map((token, i) => (
                     <button
                         key={i}
-                        className="bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 px-3 py-2 rounded-xl font-mono font-bold text-sm shadow-sm hover:border-brand-400 dark:hover:border-brand-600 hover:bg-brand-50 dark:hover:bg-brand-950/30 active:scale-95 transition-all"
+                        className="bg-white border-2 border-slate-300 px-3 py-2 rounded-xl font-mono font-bold text-sm shadow-sm hover:border-brand-400 hover:bg-brand-50 active:scale-95 transition-all"
                         onClick={() => { if (isChecked) return; setAvailableTokens(p => p.filter((_, j) => j !== i)); setArrangedTokens(p => [...p, token]); }}
                         disabled={isChecked}
                     >{token}</button>
@@ -310,7 +309,7 @@ export default function LessonClient({
                     {activeExercise.codeTemplate}
                 </pre>
             )}
-            <p className="font-bold text-slate-500 dark:text-slate-400 text-xs uppercase tracking-widest transition-colors">Choose the fix:</p>
+            <p className="font-bold text-slate-500 text-xs uppercase tracking-widest">Choose the fix:</p>
             <div className="flex flex-col gap-3">
                 {(activeExercise.options as string[])?.map((option, idx) => (
                     <button key={idx} className={getOptionStyle(option, true)} onClick={() => !isChecked && setSelectedOption(option)} disabled={isChecked}>
@@ -372,29 +371,28 @@ export default function LessonClient({
     };
 
     const footerBg = isChecked
-        ? (isCorrect ? 'bg-green-100 dark:bg-green-950/40 border-green-200 dark:border-green-900/50' : 'bg-red-100 dark:bg-red-950/40 border-red-200 dark:border-red-900/50')
-        : 'bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800';
+        ? (isCorrect ? 'bg-green-100 border-green-200' : 'bg-red-100 border-red-200')
+        : 'bg-white border-slate-200';
 
     return (
-        <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col pt-4 transition-colors">
+        <div className="min-h-screen bg-white flex flex-col pt-4">
             <header className="px-4 max-w-3xl mx-auto w-full flex items-center gap-4 mb-8">
-                <Link href="/home" className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <Link href="/home" className="text-slate-400 hover:text-slate-600 transition-colors">
                     <X className="w-8 h-8" />
                 </Link>
-                <div className="flex-1 h-4 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden transition-colors">
+                <div className="flex-1 h-4 bg-slate-200 rounded-full overflow-hidden">
                     <div className="h-full bg-brand-500 rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }} />
                 </div>
                 <div className="flex items-center gap-1.5 text-red-500 font-bold text-lg">
                     <Heart className="w-6 h-6 fill-red-500" /> {hearts}
                 </div>
-                <ThemeToggle />
             </header>
 
             <main className="flex-1 px-6 max-w-3xl mx-auto w-full flex flex-col pb-40">
                 <span className="text-xs font-bold text-brand-500 uppercase tracking-widest mb-3">{typeLabel[exerciseType]}</span>
 
                 {showPromptAbove && (
-                    <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight leading-tight mb-8 transition-colors">
+                    <h1 className="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight leading-tight mb-8">
                         {activeExercise.prompt}
                     </h1>
                 )}
@@ -413,7 +411,7 @@ export default function LessonClient({
             <footer className={`fixed bottom-0 left-0 right-0 p-4 border-t-2 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] transition-colors ${footerBg}`}>
                 <div className="max-w-3xl mx-auto flex flex-col gap-3">
                     {isChecked && (
-                        <div className={`font-bold text-base ${isCorrect ? 'text-green-700 dark:text-green-500' : 'text-red-700 dark:text-red-500'}`}>
+                        <div className={`font-bold text-base ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
                             {isCorrect ? '✅ Correct!' : '❌ Incorrect.'}
                             {activeExercise.explanation && (
                                 <p className="text-sm mt-1 font-medium opacity-90">{activeExercise.explanation}</p>
@@ -441,7 +439,7 @@ export default function LessonClient({
                                 className={`rounded-2xl px-12 py-4 font-bold text-xl uppercase tracking-wider transition-all shadow-lg ${
                                     hasAnswer()
                                         ? 'bg-brand-500 hover:bg-brand-600 border-b-[6px] border-brand-700 text-white active:translate-y-[6px] active:border-b-0'
-                                        : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                 }`}
                             >
                                 Check
