@@ -8,6 +8,12 @@ const nextConfig = {
     experimental: {
         serverComponentsExternalPackages: ['@prisma/client', '@kodo/db'],
         outputFileTracingRoot: path.join(__dirname, '../../'),
+        outputFileTracingIncludes: {
+            '/**': [
+                '../../node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client/libquery_engine-*',
+                '../../node_modules/.pnpm/@prisma+client@*/node_modules/@prisma/client/libquery_engine-*',
+            ],
+        },
     },
 };
 
