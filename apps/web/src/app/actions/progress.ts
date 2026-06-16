@@ -9,15 +9,28 @@ export async function upsertUserProgress(lessonId: string, xpEarned: number, per
     if (!user) throw new Error("Unauthorized");
 
     await prisma.$transaction(async (tx) => {
+        // Check if this is a first-time completion (to avoid re-farming gems)
+        const existing = await tx.userProgress.findUnique({
+            where: { userId_lessonId: { userId: user.id, lessonId } },
+        });
+        const isFirstCompletion = !existing;
+
         await tx.userProgress.upsert({
             where: { userId_lessonId: { userId: user.id, lessonId } },
             create: { userId: user.id, lessonId, xpEarned, perfect },
             update: { xpEarned, perfect, completedAt: new Date() },
         });
 
+        // Award XP (always) and gems (only on first perfect completion)
+        const GEM_REWARD = 10;
+        const gemsToAward = isFirstCompletion && perfect ? GEM_REWARD : 0;
+
         await tx.user.update({
             where: { id: user.id },
-            data: { xpTotal: { increment: xpEarned } },
+            data: {
+                xpTotal: { increment: xpEarned },
+                ...(gemsToAward > 0 && { gems: { increment: gemsToAward } }),
+            },
         });
 
         // Update weekly leaderboard
