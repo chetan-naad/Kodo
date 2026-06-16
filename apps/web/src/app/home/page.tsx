@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { Star, Flame, Heart, Shield, ShoppingBag, Check, BookOpen } from "lucide-react";
 import Link from 'next/link';
 import { prisma } from '@kodo/db';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 
 export default async function Home() {
@@ -74,11 +75,11 @@ export default async function Home() {
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col">
-            <header className="sticky top-0 bg-white border-b border-slate-200 z-30 p-4 flex items-center justify-between">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+            <header className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-30 p-4 flex items-center justify-between transition-colors">
                 <h1 className="text-xl font-extrabold text-brand-500 tracking-tight">Kodo</h1>
-                <div className="flex items-center gap-4 text-slate-600 font-bold w-full justify-end max-w-sm ml-auto">
-
+                <div className="flex items-center gap-4 text-slate-600 dark:text-slate-300 font-bold w-full justify-end max-w-sm ml-auto transition-colors">
+                    <ThemeToggle />
                     <div className="flex items-center gap-1.5 text-red-500"><Heart className="w-[18px] h-[18px] fill-red-500" /> {heartsCount}</div>
                     <div className="flex items-center gap-1.5 text-orange-500"><Flame className="w-[18px] h-[18px] fill-orange-500" /> {streakCount}</div>
                     <div className="flex items-center gap-1.5 text-blue-500"><Star className="w-[18px] h-[18px] fill-blue-500" /> {xpCount}</div>
@@ -169,11 +170,11 @@ export default async function Home() {
                                         {/* Base Gray Line (Locked) */}
                                         <path 
                                             d={getSegmentPath(0, lessons.length)} 
-                                            stroke="#e2e8f0" 
                                             strokeWidth="8" 
                                             fill="none" 
                                             strokeLinecap="round" 
                                             strokeDasharray="16 16" 
+                                            className="stroke-slate-200 dark:stroke-slate-800 transition-colors"
                                         />
 
                                         {/* Filled Golden Line (Completed) */}
@@ -222,8 +223,8 @@ export default async function Home() {
                                             nodeClass = "bg-brand-500 border-brand-700 hover:bg-brand-600 shadow-xl animate-bounce group-active:border-b-0 group-active:translate-y-2 group-active:animate-none";
                                             icon = <Star className="w-10 h-10 text-white fill-white" />;
                                         } else {
-                                            nodeClass = `bg-slate-200 border-slate-300 opacity-80 cursor-not-allowed`;
-                                            icon = <Star className="w-10 h-10 text-slate-400 fill-slate-400" />;
+                                            nodeClass = `bg-slate-200 dark:bg-slate-800 border-slate-300 dark:border-slate-700 opacity-80 cursor-not-allowed transition-colors`;
+                                            icon = <Star className="w-10 h-10 text-slate-400 dark:text-slate-600 fill-slate-400 dark:fill-slate-600" />;
                                         }
                                         
                                         const LinkComponent = isLocked ? "div" : Link;
@@ -241,7 +242,7 @@ export default async function Home() {
                         );
                     })
                 ) : (
-                    <div className="text-center text-slate-500 mt-20">
+                    <div className="text-center text-slate-500 dark:text-slate-400 mt-20 transition-colors">
                         <p className="font-bold text-xl">Coming Soon!</p>
                         <p>More lessons are being built.</p>
                     </div>
@@ -251,17 +252,17 @@ export default async function Home() {
             </main>
 
             {/* Bottom Nav */}
-            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 z-50 rounded-t-3xl md:rounded-none pb-safe">
-                <div className="max-w-md mx-auto flex justify-between p-3 px-6 text-slate-400">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t-2 border-slate-200 dark:border-slate-800 z-50 rounded-t-3xl md:rounded-none pb-safe transition-colors">
+                <div className="max-w-md mx-auto flex justify-between p-3 px-6 text-slate-400 dark:text-slate-500">
                     <Link href="/home" className="text-brand-500 flex flex-col items-center transition-transform hover:scale-105 active:scale-95">
                         <Star className="w-7 h-7 fill-brand-500 mb-1" />
                         <span className="text-[11px] font-bold uppercase tracking-wider">Learn</span>
                     </Link>
-                    <Link href="/leaderboard" className="flex flex-col items-center hover:text-slate-600 transition-transform hover:scale-105 active:scale-95">
+                    <Link href="/leaderboard" className="flex flex-col items-center hover:text-slate-600 dark:hover:text-slate-300 transition-transform hover:scale-105 active:scale-95">
                         <Shield className="w-7 h-7 mb-1" />
                         <span className="text-[11px] font-bold uppercase tracking-wider">League</span>
                     </Link>
-                    <Link href="/shop" className="flex flex-col items-center hover:text-slate-600 transition-transform hover:scale-105 active:scale-95">
+                    <Link href="/shop" className="flex flex-col items-center hover:text-slate-600 dark:hover:text-slate-300 transition-transform hover:scale-105 active:scale-95">
                         <ShoppingBag className="w-7 h-7 mb-1" />
                         <span className="text-[11px] font-bold uppercase tracking-wider">Shop</span>
                     </Link>

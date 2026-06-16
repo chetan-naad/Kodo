@@ -2,6 +2,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { prisma } from '@kodo/db';
 import { Shield, Star, Heart, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const LEAGUE_CONFIG: Record<string, { color: string; icon: string; next?: string }> = {
     Bronze: { color: 'text-amber-700', icon: '🥉', next: 'Silver' },
@@ -56,44 +57,47 @@ export default async function Leaderboard() {
     const rankColors = ['bg-yellow-100 text-yellow-700 ring-yellow-200', 'bg-slate-100 text-slate-600 ring-slate-200', 'bg-orange-100 text-orange-600 ring-orange-200'];
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col pb-32">
-            <header className="bg-white border-b border-slate-200 p-5 text-center sticky top-0 z-10 shadow-sm">
-                <h1 className="text-xl font-extrabold text-slate-800 tracking-tight uppercase">Leaderboard</h1>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col pb-32 transition-colors">
+            <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-5 flex items-center justify-between sticky top-0 z-10 shadow-sm transition-colors">
+                <h1 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight uppercase flex-1 text-center transition-colors">Leaderboard</h1>
+                <div className="absolute right-5">
+                    <ThemeToggle />
+                </div>
             </header>
 
             <main className="flex-1 max-w-lg mx-auto w-full p-4 flex flex-col gap-6 pt-10 px-4">
                 <div className="flex flex-col items-center text-center gap-2">
                     <span className="text-7xl drop-shadow-lg">{leagueConf.icon}</span>
                     <h2 className={`text-3xl font-extrabold mt-2 tracking-tight ${leagueConf.color}`}>{league} League</h2>
-                    <p className="text-slate-500 font-semibold mb-2">Top {cutoffRank} advance to {leagueConf.next ?? 'the top'}</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-semibold mb-2 transition-colors">Top {cutoffRank} advance to {leagueConf.next ?? 'the top'}</p>
                 </div>
 
                 {entries.length === 0 ? (
                     <div className="text-center py-16 flex flex-col items-center gap-3">
-                        <Shield className="w-16 h-16 text-slate-200 fill-slate-200" />
-                        <p className="font-bold text-slate-400 text-lg">No entries yet this week.</p>
-                        <p className="text-slate-400 text-sm">Complete a lesson to appear here!</p>
+                        <Shield className="w-16 h-16 text-slate-200 dark:text-slate-700 fill-slate-200 dark:fill-slate-700 transition-colors" />
+                        <p className="font-bold text-slate-400 dark:text-slate-500 text-lg transition-colors">No entries yet this week.</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-sm transition-colors">Complete a lesson to appear here!</p>
                         <Link href="/home" className="mt-4 bg-brand-500 text-white px-6 py-3 rounded-xl font-bold hover:bg-brand-600 transition-colors">Start Learning</Link>
                     </div>
                 ) : (
-                    <div className="bg-white border-2 border-slate-200 rounded-[28px] overflow-hidden shadow-sm">
+                    <div className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-[28px] overflow-hidden shadow-sm transition-colors">
                         {entries.map((entry, i) => {
                             const isCurrentUser = entry.user.id === user?.id;
                             const rank = i + 1;
-                            const avatarClass = rank <= 3 ? rankColors[rank - 1] : (isCurrentUser ? 'bg-brand-100 text-brand-600 ring-brand-100' : 'bg-slate-100 text-slate-500 ring-slate-100');
+                            const avatarClass = rank <= 3 ? rankColors[rank - 1] : (isCurrentUser ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 ring-brand-100 dark:ring-brand-900/50' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 ring-slate-100 dark:ring-slate-800');
 
                             return (
-                                <div key={entry.id} className={`flex items-center gap-4 p-5 ${i !== entries.length - 1 ? 'border-b border-slate-100' : ''} ${isCurrentUser ? 'bg-brand-50' : 'hover:bg-slate-50'} transition-colors`}>
-                                    <div className={`font-extrabold text-xl w-8 text-center ${rank <= 3 ? 'text-slate-700' : 'text-slate-400'}`}>{rank}</div>
-                                    <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl ring-4 shadow-sm ${avatarClass}`}>
+                                <div key={entry.id} className={`flex items-center gap-4 p-5 ${i !== entries.length - 1 ? 'border-b border-slate-100 dark:border-slate-800' : ''} ${isCurrentUser ? 'bg-brand-50 dark:bg-brand-950/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800'} transition-colors`}>
+                                    <div className={`font-extrabold text-xl w-8 text-center ${rank <= 3 ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400 dark:text-slate-600'}`}>{rank}</div>
+                                    <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-xl ring-4 shadow-sm transition-colors ${avatarClass}`}>
                                         {getInitials(entry.user.name)}
                                     </div>
                                     <div className="flex-1 flex flex-col">
-                                        <span className={`font-bold text-lg ${isCurrentUser ? 'text-brand-800' : 'text-slate-800'}`}>
+                                        <span className={`font-bold text-lg transition-colors ${isCurrentUser ? 'text-brand-800 dark:text-brand-500' : 'text-slate-800 dark:text-slate-200'}`}>
                                             {isCurrentUser ? 'You' : (entry.user.name || 'Unknown')}
                                         </span>
                                     </div>
-                                    <div className={`font-black text-xl tracking-tight flex items-center gap-1 ${isCurrentUser ? 'text-brand-600' : 'text-brand-500'}`}>
+                                    <div className={`font-black text-xl tracking-tight flex items-center gap-1 transition-colors ${isCurrentUser ? 'text-brand-600 dark:text-brand-400' : 'text-brand-500'}`}>
                                         <Star className="w-4 h-4 fill-current" />
                                         {entry.xpThisWeek} <span className="text-sm font-bold text-slate-400 ml-1">XP</span>
                                     </div>
@@ -101,23 +105,23 @@ export default async function Leaderboard() {
                             );
                         })}
                         {entries.length >= cutoffRank && (
-                            <div className="h-2 w-full bg-red-50 border-t-2 border-dashed border-red-200 flex items-center justify-center">
-                                <span className="text-red-400 text-[10px] font-bold uppercase tracking-widest px-2 bg-red-50">Promotion zone above</span>
+                            <div className="h-2 w-full bg-red-50 dark:bg-red-950/30 border-t-2 border-dashed border-red-200 dark:border-red-900/50 flex items-center justify-center transition-colors">
+                                <span className="text-red-400 text-[10px] font-bold uppercase tracking-widest px-2 bg-red-50 dark:bg-red-950/30 transition-colors">Promotion zone above</span>
                             </div>
                         )}
                     </div>
                 )}
             </main>
 
-            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-slate-200 z-50 rounded-t-3xl pb-safe">
-                <div className="max-w-md mx-auto flex justify-between p-3 px-6 text-slate-400">
-                    <Link href="/home" className="flex flex-col items-center hover:text-slate-600 transition-transform hover:scale-105 active:scale-95">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t-2 border-slate-200 dark:border-slate-800 z-50 rounded-t-3xl pb-safe transition-colors">
+                <div className="max-w-md mx-auto flex justify-between p-3 px-6 text-slate-400 dark:text-slate-500">
+                    <Link href="/home" className="flex flex-col items-center hover:text-slate-600 dark:hover:text-slate-300 transition-transform hover:scale-105 active:scale-95">
                         <Star className="w-7 h-7 mb-1" /><span className="text-[11px] font-bold uppercase tracking-wider">Learn</span>
                     </Link>
                     <Link href="/leaderboard" className="text-brand-500 flex flex-col items-center transition-transform hover:scale-105 active:scale-95">
                         <Shield className="w-7 h-7 fill-brand-500 mb-1" /><span className="text-[11px] font-bold uppercase tracking-wider">League</span>
                     </Link>
-                    <Link href="/shop" className="flex flex-col items-center hover:text-slate-600 transition-transform hover:scale-105 active:scale-95">
+                    <Link href="/shop" className="flex flex-col items-center hover:text-slate-600 dark:hover:text-slate-300 transition-transform hover:scale-105 active:scale-95">
                         <ShoppingBag className="w-7 h-7 mb-1" /><span className="text-[11px] font-bold uppercase tracking-wider">Shop</span>
                     </Link>
                 </div>
