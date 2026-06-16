@@ -17,22 +17,32 @@ export default async function Leaderboard() {
     const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
     const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysToMonday));
 
-    let league = 'Bronze';
-    let userEntryId: string | null = null;
-
-    if (user) {
-        const entry = await prisma.leaderboardWeekly.findUnique({
-            where: { userId_weekStart: { userId: user.id, weekStart } },
-        });
-        if (entry) { league = entry.league; userEntryId = entry.id; }
-    }
-
-    const entries = await prisma.leaderboardWeekly.findMany({
-        where: { weekStart, league },
-        orderBy: { xpThisWeek: 'desc' },
-        include: { user: { select: { id: true, name: true, avatarUrl: true } } },
-        take: 30,
+    // Fetch all users and merge in their weekly XP (0 if no entry this week)
+    const allUsers = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+            leaderboards: {
+                where: { weekStart },
+                select: { xpThisWeek: true, league: true },
+                take: 1,
+            },
+        },
+        take: 50,
     });
+
+    const entries = allUsers
+        .map(u => ({
+            id: u.id,
+            user: { id: u.id, name: u.name, avatarUrl: u.avatarUrl },
+            xpThisWeek: u.leaderboards[0]?.xpThisWeek ?? 0,
+            league: u.leaderboards[0]?.league ?? 'Bronze',
+        }))
+        .sort((a, b) => b.xpThisWeek - a.xpThisWeek)
+        .slice(0, 30);
+
+    const league = entries.find(e => e.user.id === user?.id)?.league ?? 'Bronze';
 
     const leagueConf = LEAGUE_CONFIG[league] || LEAGUE_CONFIG['Bronze'];
     const cutoffRank = 5;

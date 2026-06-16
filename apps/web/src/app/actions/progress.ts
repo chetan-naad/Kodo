@@ -35,7 +35,9 @@ export async function upsertUserProgress(lessonId: string, xpEarned: number, per
 
         // Update weekly leaderboard
         const now = new Date();
-        const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - now.getUTCDay() + 1));
+        const dayOfWeek = now.getUTCDay();
+        const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const weekStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - daysToMonday));
         await tx.leaderboardWeekly.upsert({
             where: { userId_weekStart: { userId: user.id, weekStart } },
             update: { xpThisWeek: { increment: xpEarned } },
