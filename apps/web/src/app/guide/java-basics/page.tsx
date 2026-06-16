@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Rocket, ShieldCheck, Cpu, Globe, Infinity, Hexagon, Code, Blocks, Type, MessageSquare, Terminal } from 'lucide-react';
+import { ArrowLeft, Rocket, ShieldCheck, Cpu, Globe, Infinity as InfinityIcon, Hexagon, Code, Blocks, Type, MessageSquare, Terminal } from 'lucide-react';
 import Link from 'next/link';
 
 export default function JavaBasicsGuide() {
@@ -64,7 +64,7 @@ export default function JavaBasicsGuide() {
                             { icon: Globe, title: "Platform Indep.", desc: "Write once, run anywhere." },
                             { icon: Rocket, title: "High Perf.", desc: "Thanks to the JIT compiler." },
                             { icon: Code, title: "Compiled + Interp.", desc: "javac -> JVM" },
-                            { icon: Infinity, title: "Multi-threaded", desc: "Run concurrent tasks." },
+                            { icon: InfinityIcon, title: "Multi-threaded", desc: "Run concurrent tasks." },
                             { icon: Blocks, title: "Object Oriented", desc: "Everything is an object." },
                             { icon: MessageSquare, title: "Polyglot", desc: "JVM speaks many languages." },
                         ].map((f, i) => (
