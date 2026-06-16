@@ -6,11 +6,11 @@ async function main() {
   console.log('Seeding Java Stack Unwinding unit...');
 
   const stage = await prisma.stage.findFirst({
-    where: { title: "Introduction to Java" }
+    where: { title: "Exception Handling" }
   });
 
   if (!stage) {
-    throw new Error("Stage 'Introduction to Java' not found.");
+    throw new Error("Stage 'Exception Handling' not found. Run seedHistory.ts first.");
   }
 
   // Find if unit exists and delete to avoid duplicates

@@ -5,17 +5,53 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding Java History...');
 
-  // Clean up previous seeds for this particular stage to avoid clutter
+  // Clean up previous seeds for all stages to avoid clutter
   await prisma.stage.deleteMany({
-    where: { title: "Introduction to Java" }
+    where: {
+      title: {
+        in: [
+          "Introduction to Java",
+          "Java Fundamentals",
+          "Object-Oriented Programming",
+          "Exception Handling"
+        ]
+      }
+    }
   });
 
-  // 1. Create a Stage
+  // 1. Create all Stages
   const stage = await prisma.stage.create({
     data: {
       title: "Introduction to Java",
       description: "Learn the fundamentals and history of Java.",
       order: 1,
+      published: true
+    }
+  });
+
+  await prisma.stage.create({
+    data: {
+      title: "Java Fundamentals",
+      description: "Master variables, methods, memory, and core Java building blocks.",
+      order: 2,
+      published: true
+    }
+  });
+
+  await prisma.stage.create({
+    data: {
+      title: "Object-Oriented Programming",
+      description: "Explore OOP pillars — inheritance, polymorphism, abstraction, and encapsulation.",
+      order: 3,
+      published: true
+    }
+  });
+
+  await prisma.stage.create({
+    data: {
+      title: "Exception Handling",
+      description: "Handle errors gracefully with try-catch, custom exceptions, and stack unwinding.",
+      order: 4,
       published: true
     }
   });

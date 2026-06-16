@@ -1,12 +1,11 @@
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
-import { Star, Flame, Heart, Shield, ShoppingBag, Check, RotateCcw, BookOpen, FlaskConical } from "lucide-react";
+import { Star, Flame, Heart, Shield, ShoppingBag, Check, BookOpen } from "lucide-react";
 import Link from 'next/link';
 import { prisma } from '@kodo/db';
-import { resetUserProgress } from '../actions/progress';
 
-export default async function Home({ searchParams }: { searchParams: { dev?: string } }) {
-    const isDevMode = searchParams?.dev === 'true';
+
+export default async function Home() {
     const user = await currentUser();
     let dbUser = null;
     let userProgress = [];
@@ -79,12 +78,7 @@ export default async function Home({ searchParams }: { searchParams: { dev?: str
             <header className="sticky top-0 bg-white border-b border-slate-200 z-30 p-4 flex items-center justify-between">
                 <h1 className="text-xl font-extrabold text-brand-500 tracking-tight">Kodo</h1>
                 <div className="flex items-center gap-4 text-slate-600 font-bold w-full justify-end max-w-sm ml-auto">
-                    <Link 
-                        href={isDevMode ? "/home" : "/home?dev=true"}
-                        className={`text-[10px] font-black tracking-widest px-2 py-1 rounded-md border-2 uppercase transition-all ${isDevMode ? 'bg-purple-500 text-white border-purple-600 shadow-sm' : 'bg-slate-200 text-slate-400 border-slate-300'}`}
-                    >
-                        {isDevMode ? "Dev: ON" : "Dev: OFF"}
-                    </Link>
+
                     <div className="flex items-center gap-1.5 text-red-500"><Heart className="w-[18px] h-[18px] fill-red-500" /> {heartsCount}</div>
                     <div className="flex items-center gap-1.5 text-orange-500"><Flame className="w-[18px] h-[18px] fill-orange-500" /> {streakCount}</div>
                     <div className="flex items-center gap-1.5 text-blue-500"><Star className="w-[18px] h-[18px] fill-blue-500" /> {xpCount}</div>
@@ -149,15 +143,6 @@ export default async function Home({ searchParams }: { searchParams: { dev?: str
                                         <p className="text-brand-100 font-medium">Unit {unit.order} • {unit.title}</p>
                                     </div>
                                     <div className="flex gap-2 items-center">
-                                        {isDevMode && lessons.length > 0 && (
-                                            <Link 
-                                                href={`/lesson/${lessons[0].id}`} 
-                                                className="bg-purple-500 hover:bg-purple-400 p-3 rounded-xl border-b-4 border-purple-700 active:border-b-0 active:translate-y-1 transition-all flex items-center gap-2 font-bold text-white text-sm"
-                                            >
-                                                <FlaskConical className="w-5 h-5" />
-                                                Dev Test
-                                            </Link>
-                                        )}
                                         <Link 
                                             href={`/guide/${guideSlug}`} 
                                             className="bg-brand-600 hover:bg-brand-400 p-3 rounded-xl border-b-4 border-brand-800 active:border-b-0 active:translate-y-1 transition-all flex items-center gap-2 font-bold"
@@ -237,14 +222,14 @@ export default async function Home({ searchParams }: { searchParams: { dev?: str
                                             nodeClass = "bg-brand-500 border-brand-700 hover:bg-brand-600 shadow-xl animate-bounce group-active:border-b-0 group-active:translate-y-2 group-active:animate-none";
                                             icon = <Star className="w-10 h-10 text-white fill-white" />;
                                         } else {
-                                            nodeClass = `bg-slate-200 border-slate-300 opacity-80 ${isDevMode ? 'hover:bg-slate-300 group-active:border-b-0 group-active:translate-y-2 transition-all' : 'cursor-not-allowed'}`;
+                                            nodeClass = `bg-slate-200 border-slate-300 opacity-80 cursor-not-allowed`;
                                             icon = <Star className="w-10 h-10 text-slate-400 fill-slate-400" />;
                                         }
                                         
-                                        const LinkComponent = (isLocked && !isDevMode) ? "div" : Link;
+                                        const LinkComponent = isLocked ? "div" : Link;
                                         
                                         return (
-                                            <LinkComponent key={lesson.id} href={(isLocked && !isDevMode) ? "#" : `/lesson/${lesson.id}`} className={`relative z-10 group ${offsetClass}`}>
+                                            <LinkComponent key={lesson.id} href={isLocked ? "#" : `/lesson/${lesson.id}`} className={`relative z-10 group ${offsetClass}`}>
                                                 <div className={`w-20 h-20 rounded-full border-b-[8px] flex items-center justify-center transform transition-all ${nodeClass}`}>
                                                     {icon}
                                                 </div>
@@ -262,14 +247,7 @@ export default async function Home({ searchParams }: { searchParams: { dev?: str
                     </div>
                 )}
                 
-                {/* DEV ONLY RESET BUTTON */}
-                {isDevMode && (
-                    <form action={resetUserProgress} className="mt-8 flex justify-center mb-8">
-                        <button type="submit" className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-500 rounded-lg font-bold text-sm tracking-wide border-b-4 border-slate-300 active:border-b-0 active:translate-y-[4px] transition-all hover:bg-slate-300 hover:text-slate-600">
-                            <RotateCcw className="w-4 h-4" /> Reset Progress (Dev)
-                        </button>
-                    </form>
-                )}
+
             </main>
 
             {/* Bottom Nav */}

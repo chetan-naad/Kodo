@@ -6,11 +6,11 @@ async function main() {
   console.log('Seeding Java Composition unit...');
 
   const stage = await prisma.stage.findFirst({
-    where: { title: "Introduction to Java" }
+    where: { title: "Java Fundamentals" }
   });
 
   if (!stage) {
-    throw new Error("Stage 'Introduction to Java' not found.");
+    throw new Error("Stage 'Java Fundamentals' not found. Run seedHistory.ts first.");
   }
 
   await prisma.unit.deleteMany({

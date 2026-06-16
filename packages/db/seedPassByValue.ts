@@ -6,11 +6,11 @@ async function main() {
   console.log('Seeding Java Pass by Value / Reference unit...');
 
   const stage = await prisma.stage.findFirst({
-    where: { title: "Introduction to Java" }
+    where: { title: "Java Fundamentals" }
   });
 
   if (!stage) {
-    throw new Error("Stage 'Introduction to Java' not found.");
+    throw new Error("Stage 'Java Fundamentals' not found. Run seedHistory.ts first.");
   }
 
   // Find if unit exists and delete to avoid duplicates
